@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cashflow Pro v3.0 Mobile</title>
+    <title>Cashflow Manager Pro v3.0 Mobile</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -22,218 +22,241 @@
             --border: #e2e8f0;
             --text-main: #1e293b;
             --text-sub: #64748b;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             --radius-lg: 16px;
             --radius-md: 12px;
             --sidebar-width: 280px;
         }
 
-        /* Reset & Base */
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
-
-        /* === LAYOUT === */
-        .app-wrapper { display: flex; min-height: 100vh; position: relative; }
         
-        /* Sidebar & Overlay */
-        .sidebar-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 49;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s;
-            backdrop-filter: blur(2px);
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--light);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
         }
-        .sidebar-overlay.active { opacity: 1; pointer-events: all; }
 
+        /* === MOBILE OVERLAY === */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+            display: none;
+            backdrop-filter: blur(2px);
+            transition: opacity 0.3s;
+        }
+        .sidebar-overlay.active { display: block; }
+
+        /* === SIDEBAR === */
         .sidebar {
             width: var(--sidebar-width);
             background: var(--surface);
             border-right: 1px solid var(--border);
-            position: fixed; top: 0; bottom: 0; left: 0;
+            position: fixed;
+            height: 100vh;
             z-index: 50;
-            transform: translateX(0);
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; flex-direction: column;
+            display: flex;
+            flex-direction: column;
             padding: 24px;
             overflow-y: auto;
         }
 
-        /* Mobile Sidebar Logic */
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.active { transform: translateX(0); }
-        }
-
         .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; }
-        .logo-icon { width: 36px; height: 36px; background: var(--primary); color: white; border-radius: 10px; display: grid; place-items: center; font-size: 20px; }
-        .logo-text { font-size: 1.25rem; font-weight: 700; }
-
-        /* Navigation */
-        .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-        .nav-item {
-            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
-            border-radius: var(--radius-md); color: var(--text-sub);
-            text-decoration: none; font-weight: 500; cursor: pointer; border: none; background: none; width: 100%;
-            transition: all 0.2s;
+        .logo-icon {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            color: white;
+            font-size: 20px;
         }
-        .nav-item:hover, .nav-item.active { background: rgba(67, 97, 238, 0.08); color: var(--primary); }
-        .nav-item.active { font-weight: 700; border-right: 3px solid var(--primary); }
+        .logo-text { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.5px; }
 
-        /* Profile Section inside Sidebar */
+        .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .nav-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 16px; border-radius: var(--radius-md);
+            color: var(--text-sub); text-decoration: none;
+            font-weight: 500; cursor: pointer; border: none; background: none;
+            width: 100%; text-align: left; font-family: inherit; font-size: 0.95rem;
+        }
+        .nav-item:hover, .nav-item.active { background: var(--light); color: var(--primary); font-weight: 600; }
+        .nav-item.active { background: rgba(67, 97, 238, 0.08); }
+
+        /* Profil Sidebar Enhanced */
+        .user-profile-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
         .profile-card {
-            background: var(--light); border: 1px solid var(--border);
-            padding: 16px; border-radius: var(--radius-md); margin-top: auto;
+            background: var(--light);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
         }
         .profile-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-        .avatar { width: 40px; height: 40px; background: var(--primary-dark); color: white; border-radius: 50%; display: grid; place-items: center; font-weight: 700; }
-        .profile-stats { font-size: 0.85rem; display: flex; flex-direction: column; gap: 6px; }
-        .stat-row { display: flex; justify-content: space-between; color: var(--text-sub); }
-        .stat-row span:last-child { font-weight: 600; color: var(--text-main); }
-        
-        .daily-advice {
-            margin-top: 12px; padding: 10px; background: rgba(16, 185, 129, 0.1); 
-            border-radius: 8px; color: var(--success); font-size: 0.8rem; line-height: 1.4;
-            border: 1px solid rgba(16, 185, 129, 0.2);
+        .avatar {
+            width: 36px; height: 36px; background: var(--primary); color: white;
+            border-radius: 50%; display: grid; place-items: center; font-weight: 700;
         }
+        .profile-details { font-size: 0.8rem; color: var(--text-sub); }
+        .profile-stat-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.75rem; }
+        .daily-limit-box {
+            background: var(--primary); color: white;
+            padding: 10px; border-radius: 8px; text-align: center;
+            margin-top: 8px;
+        }
+        .daily-limit-box small { opacity: 0.8; font-size: 0.7rem; display: block; }
+        .daily-limit-box strong { font-size: 1.1rem; }
 
-        /* Main Content */
+        /* === MAIN CONTENT === */
         .main-content {
-            flex: 1; margin-left: var(--sidebar-width); padding: 32px 24px;
-            transition: margin 0.3s; width: 100%;
+            flex: 1; margin-left: var(--sidebar-width);
+            padding: 24px; transition: all 0.3s;
         }
-        @media (max-width: 768px) { .main-content { margin-left: 0; padding: 20px 16px; } }
 
-        /* Header */
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; gap: 16px; }
-        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
-        @media (max-width: 768px) { .mobile-menu-btn { display: block; } }
-
-        /* Dashboard Cards */
+        .page-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+            background: var(--surface); padding: 16px 20px; border-radius: var(--radius-lg);
+            border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+        }
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; margin-right: 12px; cursor: pointer;}
+        
+        /* Stats Grid */
         .dashboard-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;
         }
         .stat-card {
             background: var(--surface); padding: 20px; border-radius: var(--radius-lg);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid var(--border);
+            border: 1px solid var(--border); box-shadow: var(--shadow-sm);
         }
-        .stat-label { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 4px; }
+        .stat-label { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 8px; }
         .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
-        
-        /* Charts */
-        .chart-container {
-            background: var(--surface); padding: 20px; border-radius: var(--radius-lg);
-            border: 1px solid var(--border); margin-bottom: 24px; height: 300px;
-        }
+        .stat-icon-wrap { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-size: 1.2rem; margin-bottom: 12px; }
 
-        /* Transactions & Filters */
-        .transactions-card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); overflow: hidden; }
+        /* Charts & Lists */
+        .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .card-box { background: var(--surface); border-radius: var(--radius-lg); padding: 20px; border: 1px solid var(--border); }
         
-        .filters-bar {
-            padding: 16px; border-bottom: 1px solid var(--border);
-            display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+        /* Transaction History */
+        .filter-container {
+            display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px;
         }
-        
-        /* FILTER BUTTON BORDERS ADDED HERE */
         .filter-btn {
-            background: transparent; border: 1px solid var(--border); /* BORDER ADDED */
-            padding: 8px 16px; border-radius: 20px; font-size: 0.9rem;
-            color: var(--text-sub); cursor: pointer; transition: all 0.2s; font-weight: 500;
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--border); /* Border default */
+            border-radius: 20px;
+            color: var(--text-sub);
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
         }
         .filter-btn.active {
-            background: var(--primary); color: white; border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary); /* Border saat aktif */
+            font-weight: 600;
         }
-        .filter-btn:hover:not(.active) { border-color: var(--primary); color: var(--primary); }
 
         .transaction-row {
             display: flex; align-items: center; justify-content: space-between;
             padding: 16px; border-bottom: 1px solid var(--border); gap: 12px;
         }
-        .t-left { display: flex; align-items: center; gap: 12px; }
-        .t-icon {
-            width: 40px; height: 40px; border-radius: 10px;
-            display: grid; place-items: center; font-size: 1.2rem; flex-shrink: 0;
-        }
-        .t-info h4 { font-size: 0.95rem; margin-bottom: 2px; }
-        .t-info span { font-size: 0.8rem; color: var(--text-sub); }
+        .t-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+        .t-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; font-size: 1.2rem; flex-shrink: 0; }
+        .t-info h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 2px; }
+        .t-info span { font-size: 0.75rem; color: var(--text-sub); }
         .t-right { text-align: right; }
-        .t-amount { font-weight: 700; font-size: 1rem; }
+        .t-amount { font-weight: 700; font-size: 0.95rem; display: block; }
         .t-actions { display: flex; gap: 8px; margin-top: 4px; justify-content: flex-end; }
-        
-        .action-btn {
-            font-size: 0.8rem; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border);
-            background: transparent; cursor: pointer; color: var(--text-sub);
-        }
-        .action-btn.edit:hover { color: var(--primary); border-color: var(--primary); }
-        .action-btn.delete:hover { color: var(--danger); border-color: var(--danger); }
+        .btn-mini { padding: 4px 8px; font-size: 0.75rem; border-radius: 6px; border: 1px solid var(--border); background: none; cursor: pointer; }
+        .btn-mini:hover { background: var(--light); color: var(--primary); }
 
-        /* Forms & Inputs */
-        .input-group { margin-bottom: 16px; }
-        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
-        .input-group input, .input-group select {
-            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border);
-            background: var(--light); font-size: 1rem;
-        }
-        .btn {
-            width: 100%; padding: 14px; border-radius: 10px; border: none;
-            font-weight: 600; cursor: pointer; font-size: 1rem; display: flex; justify-content: center; gap: 8px;
-        }
-        .btn-primary { background: var(--primary); color: white; }
-        
-        /* Modal for Profile Edit */
+        /* Modal Profile */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100;
-            display: flex; align-items: center; justify-content: center; padding: 20px;
+            display: none; place-items: center; padding: 20px;
         }
-        .modal-content {
+        .modal-box {
             background: white; width: 100%; max-width: 400px; padding: 24px;
-            border-radius: 20px; animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 20px; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* Auth */
+        /* Auth Page */
         .auth-container {
-            position: fixed; inset: 0; z-index: 200; background: white;
-            display: grid; place-items: center; padding: 20px;
+            position: fixed; inset: 0; background: var(--light); z-index: 200;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+        }
+        .auth-card {
+            background: white; padding: 32px; border-radius: 24px; width: 100%; max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05); text-align: center;
+        }
+        .input-field {
+            width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 12px;
+            margin-bottom: 16px; font-size: 1rem; background: var(--light);
+        }
+        .btn-primary {
+            background: var(--primary); color: white; border: none; padding: 14px;
+            border-radius: 12px; width: 100%; font-weight: 600; font-size: 1rem; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
         }
 
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .charts-row { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 16px; }
+            .mobile-menu-btn { display: block; }
+            .dashboard-grid { grid-template-columns: 1fr 1fr; } /* 2 kolom di mobile */
+            .page-header { padding: 12px 16px; }
+            .stat-value { font-size: 1.25rem; }
+        }
+        
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="authContainer" class="auth-container">
-        <div style="width: 100%; max-width: 400px; text-align: center;">
-            <div style="width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 16px; display: grid; place-items: center; font-size: 32px; margin: 0 auto 24px;">
-                <i class="ph ph-wallet"></i>
-            </div>
+    <div id="authSection" class="auth-container">
+        <div class="auth-card">
+            <div class="logo-icon" style="margin: 0 auto 20px;"><i class="ph ph-wallet"></i></div>
             <h2 id="authTitle" style="margin-bottom: 8px;">Selamat Datang</h2>
-            <p id="authSub" style="color: var(--text-sub); margin-bottom: 32px;">Kelola keuangan Anda lebih cerdas.</p>
+            <p id="authSubtitle" style="color: var(--text-sub); margin-bottom: 24px;">Kelola keuangan Anda lebih pintar.</p>
             
             <form id="authForm">
-                <div class="input-group" style="text-align: left;">
-                    <label>Email</label>
-                    <input type="email" id="authEmail" required placeholder="email@contoh.com">
-                </div>
                 <div id="registerFields" class="hidden">
-                    <div class="input-group" style="text-align: left;">
-                        <label>Nama Lengkap</label>
-                        <input type="text" id="authName" placeholder="Nama Anda">
-                    </div>
+                    <input type="text" id="regName" class="input-field" placeholder="Nama Lengkap">
                 </div>
-                <div class="input-group" style="text-align: left;">
-                    <label>Password</label>
-                    <input type="password" id="authPass" required placeholder="••••••••">
-                </div>
-                <button type="submit" class="btn btn-primary" id="authBtn">Masuk</button>
+                <input type="email" id="authEmail" class="input-field" placeholder="Email Address" required>
+                <input type="password" id="authPass" class="input-field" placeholder="Password" required>
+                
+                <button type="submit" class="btn-primary" id="authBtn">Masuk</button>
             </form>
             
-            <div style="margin-top: 24px; font-size: 0.9rem;">
-                <span id="authSwitchText">Belum punya akun?</span>
-                <a href="#" onclick="toggleAuthMode()" style="color: var(--primary); font-weight: 700; text-decoration: none;" id="authSwitchLink">Daftar sekarang</a>
+            <div style="margin-top: 20px; font-size: 0.9rem;">
+                <span id="authSwitchText">Belum punya akun?</span> 
+                <a href="#" style="color: var(--primary); font-weight: 600; text-decoration: none;" onclick="toggleAuthMode()">Klik disini</a>
             </div>
         </div>
     </div>
 
-    <div id="appContainer" class="app-wrapper hidden">
-        
-        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <div id="appSection" class="hidden">
+        <div class="sidebar-overlay" onclick="closeSidebar()"></div>
 
         <aside class="sidebar" id="sidebar">
             <div class="logo-area">
@@ -249,50 +272,55 @@
                     <i class="ph ph-plus-circle"></i> Input Transaksi
                 </button>
                 <button class="nav-item" onclick="switchPage('history', this)">
-                    <i class="ph ph-list-dashes"></i> Riwayat
+                    <i class="ph ph-list-dashes"></i> Riwayat & Edit
                 </button>
             </nav>
 
-            <div class="profile-card">
-                <div class="profile-header" onclick="openProfileModal()" style="cursor: pointer;">
+            <div class="user-profile-section">
+                <div class="profile-header">
                     <div class="avatar" id="sideAvatar">U</div>
-                    <div style="flex: 1; overflow: hidden;">
-                        <div style="font-weight: 700; font-size: 0.95rem;" id="sideName">User</div>
-                        <div style="font-size: 0.75rem; color: var(--primary);">Klik untuk edit profil</div>
+                    <div>
+                        <h4 id="sideName" style="font-size: 0.9rem;">User</h4>
+                        <div style="font-size: 0.7rem; color: var(--text-sub);" id="sideEmail">email@mail.com</div>
                     </div>
-                    <i class="ph ph-gear"></i>
+                    <button onclick="openProfileModal()" style="margin-left: auto; border: none; background: none; color: var(--primary);">
+                        <i class="ph ph-gear" style="font-size: 1.2rem;"></i>
+                    </button>
                 </div>
                 
-                <div class="profile-stats">
-                    <div class="stat-row">
-                        <span>Gaji:</span>
-                        <span id="sideSalary">Rp 0</span>
+                <div class="profile-card">
+                    <div class="profile-stat-row">
+                        <span>Gaji Bulanan</span>
+                        <strong id="sideSalary">Rp 0</strong>
                     </div>
-                    <div class="stat-row">
-                        <span>Target:</span>
-                        <span id="sideTarget">Rp 0</span>
+                    <div class="profile-stat-row">
+                        <span>Target Tabungan</span>
+                        <strong id="sideTarget" style="color: var(--success);">Rp 0</strong>
+                    </div>
+                    <div class="profile-stat-row">
+                        <span>Tgl Lahir</span>
+                        <span id="sideDob">-</span>
+                    </div>
+
+                    <div class="daily-limit-box">
+                        <small>Saran Pengeluaran Harian</small>
+                        <strong id="dailyAllowance">Rp 0</strong>
                     </div>
                 </div>
 
-                <div class="daily-advice" id="budgetAdvice">
-                    <i class="ph ph-lightbulb"></i> Atur profil untuk melihat saran pengeluaran harian.
-                </div>
-                
-                <button onclick="logout()" style="width: 100%; margin-top: 12px; padding: 8px; border: 1px solid var(--danger); background: transparent; color: var(--danger); border-radius: 8px; cursor: pointer;">
-                    Keluar
+                <button onclick="logout()" style="width: 100%; padding: 10px; border: 1px solid var(--danger); color: var(--danger); background: white; border-radius: 8px; margin-top: 10px; cursor: pointer;">
+                    <i class="ph ph-sign-out"></i> Keluar
                 </button>
             </div>
         </aside>
 
         <main class="main-content">
             <div class="page-header">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <button class="mobile-menu-btn" onclick="toggleSidebar()">
-                        <i class="ph ph-list"></i>
-                    </button>
+                <div style="display: flex; align-items: center;">
+                    <button class="mobile-menu-btn" onclick="openSidebar()"><i class="ph ph-list"></i></button>
                     <div>
-                        <h2 style="font-weight: 700; font-size: 1.5rem;" id="pageTitle">Overview</h2>
-                        <p style="color: var(--text-sub); font-size: 0.9rem;" id="currentDate">...</p>
+                        <h1 id="pageTitle" style="font-size: 1.25rem; font-weight: 700;">Dashboard</h1>
+                        <p style="font-size: 0.8rem; color: var(--text-sub);" id="currentDate">Senin, 17 Jan</p>
                     </div>
                 </div>
             </div>
@@ -300,500 +328,539 @@
             <div id="dashboardPage" class="page-section">
                 <div class="dashboard-grid">
                     <div class="stat-card">
-                        <div class="stat-label">Pemasukan Bulan Ini</div>
-                        <div class="stat-value" id="dashIncome" style="color: var(--success)">Rp 0</div>
+                        <div class="stat-icon-wrap" style="background: rgba(16,185,129,0.1); color: #10b981;"><i class="ph ph-arrow-down-left"></i></div>
+                        <div class="stat-label">Pemasukan</div>
+                        <div class="stat-value" id="dashIncome">0</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Pengeluaran Bulan Ini</div>
-                        <div class="stat-value" id="dashExpense" style="color: var(--danger)">Rp 0</div>
+                        <div class="stat-icon-wrap" style="background: rgba(239,68,68,0.1); color: #ef4444;"><i class="ph ph-arrow-up-right"></i></div>
+                        <div class="stat-label">Pengeluaran</div>
+                        <div class="stat-value" id="dashExpense">0</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Saldo Bersih</div>
-                        <div class="stat-value" id="dashBalance" style="color: var(--primary)">Rp 0</div>
+                        <div class="stat-icon-wrap" style="background: rgba(67,97,238,0.1); color: #4361ee;"><i class="ph ph-wallet"></i></div>
+                        <div class="stat-label">Saldo</div>
+                        <div class="stat-value" id="dashBalance">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-wrap" style="background: rgba(245,158,11,0.1); color: #f59e0b;"><i class="ph ph-piggy-bank"></i></div>
+                        <div class="stat-label">Sisa Budget Harian</div>
+                        <div class="stat-value" id="dashDailyLeft">0</div>
                     </div>
                 </div>
 
-                <div class="chart-container">
-                    <canvas id="mainChart"></canvas>
-                </div>
-
-                <div class="transactions-card">
-                    <div style="padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-                        <h3 style="font-size: 1.1rem;">Transaksi Terbaru</h3>
-                        <button onclick="switchPage('history')" style="background: none; border: none; color: var(--primary); cursor: pointer;">Lihat Semua</button>
+                <div class="charts-row">
+                    <div class="card-box">
+                        <h3 style="margin-bottom: 16px; font-size: 1rem;">Arus Kas Bulan Ini</h3>
+                        <canvas id="mainChart" height="200"></canvas>
                     </div>
-                    <div id="recentList"></div>
+                    <div class="card-box">
+                        <h3 style="margin-bottom: 16px; font-size: 1rem;">Pengeluaran</h3>
+                        <canvas id="pieChart" height="200"></canvas>
+                    </div>
                 </div>
             </div>
 
             <div id="inputPage" class="page-section hidden">
-                <div style="max-width: 500px; margin: 0 auto; background: var(--surface); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
-                    <h3 style="margin-bottom: 20px;" id="inputFormTitle">Tambah Transaksi</h3>
-                    
+                <div class="card-box" style="max-width: 600px; margin: 0 auto;">
                     <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                        <button type="button" class="filter-btn active" style="flex: 1; text-align: center;" onclick="setTxType('income')" id="btnIn">Pemasukan</button>
-                        <button type="button" class="filter-btn" style="flex: 1; text-align: center;" onclick="setTxType('expense')" id="btnEx">Pengeluaran</button>
+                        <button class="btn-primary" style="flex:1; background: var(--success);" onclick="setTxType('income')" id="btnIncome">Pemasukan</button>
+                        <button class="btn-primary" style="flex:1; background: transparent; border: 1px solid var(--border); color: var(--text-sub);" onclick="setTxType('expense')" id="btnExpense">Pengeluaran</button>
                     </div>
-
+                    
                     <form id="txForm">
-                        <div class="input-group">
-                            <label>Jumlah (Rp)</label>
-                            <input type="text" id="inAmount" placeholder="0" required style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">
+                        <input type="hidden" id="editId"> <div class="input-field" style="display: flex; align-items: center; background: var(--light);">
+                            <span style="font-weight: 700; color: var(--text-main);">Rp</span>
+                            <input type="number" id="txAmount" placeholder="0" required style="border: none; background: transparent; font-size: 1.5rem; font-weight: 700; width: 100%; margin-left: 8px; outline: none;">
                         </div>
-                        <div class="input-group">
-                            <label>Kategori</label>
-                            <select id="inCategory" required></select>
-                        </div>
-                        <div class="input-group">
-                            <label>Tanggal</label>
-                            <input type="date" id="inDate" required>
-                        </div>
-                        <div class="input-group">
-                            <label>Catatan</label>
-                            <input type="text" id="inNote" placeholder="Contoh: Makan siang">
-                        </div>
-                        <button type="submit" class="btn btn-primary" id="btnSaveTx">
-                            <i class="ph ph-floppy-disk"></i> SIMPAN
-                        </button>
-                        <button type="button" class="btn" style="background: transparent; color: var(--text-sub); border: 1px solid var(--border); margin-top: 10px;" onclick="resetForm()">
-                            Batal / Reset
-                        </button>
+                        
+                        <label style="font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; display: block;">Kategori</label>
+                        <select id="txCategory" class="input-field"></select>
+
+                        <label style="font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; display: block;">Tanggal</label>
+                        <input type="date" id="txDate" class="input-field" required>
+
+                        <label style="font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; display: block;">Deskripsi</label>
+                        <input type="text" id="txDesc" class="input-field" placeholder="Contoh: Makan siang">
+
+                        <button type="submit" class="btn-primary" id="btnSaveTx"><i class="ph ph-check"></i> SIMPAN</button>
+                        <button type="button" onclick="cancelEdit()" id="btnCancelEdit" class="hidden" style="width: 100%; padding: 12px; border: none; background: transparent; color: var(--danger); margin-top: 8px; cursor: pointer;">Batal Edit</button>
                     </form>
                 </div>
             </div>
 
             <div id="historyPage" class="page-section hidden">
-                <div class="transactions-card">
-                    <div class="filters-bar">
+                <div class="card-box">
+                    <div class="filter-container">
                         <button class="filter-btn active" onclick="filterHistory('all', this)">Semua</button>
                         <button class="filter-btn" onclick="filterHistory('income', this)">Pemasukan</button>
                         <button class="filter-btn" onclick="filterHistory('expense', this)">Pengeluaran</button>
                     </div>
-                    <div id="fullHistoryList"></div>
+                    <div id="historyList">
+                        </div>
                 </div>
             </div>
+
         </main>
     </div>
 
-    <div id="profileModal" class="modal-overlay hidden">
-        <div class="modal-content">
+    <div id="profileModal" class="modal-overlay">
+        <div class="modal-box">
             <h3 style="margin-bottom: 16px;">Pengaturan Profil</h3>
+            <p style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 20px;">Lengkapi data untuk perhitungan budget otomatis.</p>
+            
             <form id="profileForm">
-                <div class="input-group">
-                    <label>Nama Lengkap</label>
-                    <input type="text" id="profName" required>
-                </div>
-                <div class="input-group">
-                    <label>Gaji Bulanan (Rp)</label>
-                    <input type="text" id="profSalary" placeholder="0">
-                </div>
-                <div class="input-group">
-                    <label>Target Tabungan Bulanan (Rp)</label>
-                    <input type="text" id="profTarget" placeholder="0">
-                </div>
-                <div class="input-group">
-                    <label>Tanggal Lahir</label>
-                    <input type="date" id="profDob">
-                </div>
+                <label style="font-size: 0.8rem;">Nama Lengkap</label>
+                <input type="text" id="profName" class="input-field">
+                
+                <label style="font-size: 0.8rem;">Tanggal Lahir</label>
+                <input type="date" id="profDob" class="input-field">
+                
+                <label style="font-size: 0.8rem;">Gaji Bulanan (Rp)</label>
+                <input type="number" id="profSalary" class="input-field" placeholder="0">
+                
+                <label style="font-size: 0.8rem;">Target Tabungan (Rp)</label>
+                <input type="number" id="profTarget" class="input-field" placeholder="0">
+                
                 <div style="display: flex; gap: 10px;">
-                    <button type="button" class="btn" style="background: var(--light); color: var(--text-main);" onclick="closeProfileModal()">Tutup</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button type="button" class="btn-primary" style="background: var(--text-sub);" onclick="closeProfileModal()">Tutup</button>
+                    <button type="submit" class="btn-primary">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // === STATE MANAGEMENT ===
-        const state = {
+        // CONFIG
+        const API_URL = 'https://script.google.com/macros/s/AKfycbx4kBUmk0MkbPq1C_4Vi1I6BSmVLLAD3IenNBNmRfGMs5Ae3l4QerEZypRnXwuJEnNolQ/exec';
+        
+        // STATE
+        let state = {
             user: JSON.parse(localStorage.getItem('user')) || null,
-            txs: JSON.parse(localStorage.getItem('txs')) || [],
-            type: 'income',
-            editingId: null,
-            chart: null
+            profile: JSON.parse(localStorage.getItem('userProfile')) || { salary: 0, target: 0, dob: '' },
+            transactions: [],
+            currentType: 'income',
+            filter: 'all',
+            charts: {}
         };
 
         const CATEGORIES = {
-            income: ['Gaji', 'Bonus', 'Freelance', 'Investasi', 'Lainnya'],
-            expense: ['Makanan', 'Transport', 'Belanja', 'Tagihan', 'Hiburan', 'Kesehatan', 'Lainnya']
+            income: ['Gaji', 'Bonus', 'Investasi', 'Lainnya'],
+            expense: ['Makan', 'Transport', 'Belanja', 'Tagihan', 'Hiburan', 'Kesehatan', 'Lainnya']
         };
 
-        // === INITIALIZATION ===
+        // INIT
         document.addEventListener('DOMContentLoaded', () => {
             if (state.user) {
                 initApp();
             } else {
-                document.getElementById('authContainer').classList.remove('hidden');
+                document.getElementById('authSection').classList.remove('hidden');
             }
-            
-            // Format Number Inputs
-            ['inAmount', 'profSalary', 'profTarget'].forEach(id => {
-                document.getElementById(id).addEventListener('input', formatCurrencyInput);
-            });
-
-            // Date Header
-            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('id-ID', options);
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long'});
+            updateCategorySelect();
         });
 
-        // === AUTH ===
-        let isLoginMode = true;
+        // --- AUTH & PROFILE ---
+        let isRegister = false;
         function toggleAuthMode() {
-            isLoginMode = !isLoginMode;
-            document.getElementById('authTitle').textContent = isLoginMode ? 'Selamat Datang' : 'Buat Akun';
-            document.getElementById('authBtn').textContent = isLoginMode ? 'Masuk' : 'Daftar Akun';
-            document.getElementById('registerFields').classList.toggle('hidden', isLoginMode);
-            document.getElementById('authSwitchText').textContent = isLoginMode ? 'Belum punya akun?' : 'Sudah punya akun?';
-            document.getElementById('authSwitchLink').textContent = isLoginMode ? 'Daftar sekarang' : 'Login';
+            isRegister = !isRegister;
+            const title = document.getElementById('authTitle');
+            const sub = document.getElementById('authSubtitle');
+            const btn = document.getElementById('authBtn');
+            const switchText = document.getElementById('authSwitchText');
+            const regFields = document.getElementById('registerFields');
+
+            if(isRegister) {
+                title.textContent = "Buat Akun Baru";
+                sub.textContent = "Isi data diri untuk memulai.";
+                btn.textContent = "Daftar Sekarang";
+                switchText.textContent = "Sudah punya akun?";
+                regFields.classList.remove('hidden');
+            } else {
+                title.textContent = "Selamat Datang";
+                sub.textContent = "Kelola keuangan Anda lebih pintar.";
+                btn.textContent = "Masuk";
+                switchText.textContent = "Belum punya akun?";
+                regFields.classList.add('hidden');
+            }
         }
 
-        document.getElementById('authForm').addEventListener('submit', (e) => {
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('authEmail').value;
             const pass = document.getElementById('authPass').value;
-            
-            // Simpel Mock Auth
-            if (!isLoginMode) {
-                const name = document.getElementById('authName').value;
-                state.user = { email, name, salary: 0, target: 0, dob: '' };
-                localStorage.setItem('user', JSON.stringify(state.user));
-                initApp();
-            } else {
-                // Check if user exists (mock) or just login current stored
-                if (state.user && state.user.email === email) {
-                    initApp();
-                } else if (!state.user) {
-                    // Auto create simple user if nothing exists for demo
-                    state.user = { email, name: 'Pengguna', salary: 0, target: 0, dob: '' };
+            const name = document.getElementById('regName').value;
+            const btn = document.getElementById('authBtn');
+
+            btn.innerHTML = 'Loading...';
+            btn.disabled = true;
+
+            const action = isRegister ? 'register' : 'login';
+            const payload = { action, email, password: pass };
+            if(isRegister) payload.name = name;
+
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    state.user = data.data;
                     localStorage.setItem('user', JSON.stringify(state.user));
-                    initApp();
+                    
+                    // Init default profile if empty
+                    if(!localStorage.getItem('userProfile')) {
+                        state.profile = { salary: 0, target: 0, dob: '', name: state.user.name };
+                        localStorage.setItem('userProfile', JSON.stringify(state.profile));
+                    }
+                    
+                    location.reload();
                 } else {
-                    alert('Login berhasil (Demo Mode)');
-                    initApp();
+                    alert(data.message);
                 }
-            }
+            } catch (err) { alert('Koneksi Error'); } 
+            finally { btn.innerHTML = isRegister ? 'Daftar' : 'Masuk'; btn.disabled = false; }
         });
 
         function logout() {
-            if(confirm('Keluar dari aplikasi?')) {
-                // Optional: localStorage.clear(); if want to wipe data
-                location.reload();
-            }
+            localStorage.removeItem('user');
+            location.reload();
         }
 
+        // --- APP LOGIC ---
         function initApp() {
-            document.getElementById('authContainer').classList.add('hidden');
-            document.getElementById('appContainer').classList.remove('hidden');
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('appSection').classList.remove('hidden');
+            
+            // Load Profile to UI
             updateProfileUI();
-            updateUI();
+            
+            // Load Transactions
+            fetchTransactions();
         }
 
-        // === UI UPDATES ===
-        function updateUI() {
-            const sorted = [...state.txs].sort((a,b) => new Date(b.date) - new Date(a.date));
-            
-            // Dashboard Logic
-            const now = new Date();
-            const thisMonth = now.toISOString().slice(0, 7);
-            const monthTxs = sorted.filter(t => t.date.startsWith(thisMonth));
-            
-            const income = monthTxs.filter(t => t.type === 'income').reduce((a,b) => a + b.amount, 0);
-            const expense = monthTxs.filter(t => t.type === 'expense').reduce((a,b) => a + b.amount, 0);
-            
-            document.getElementById('dashIncome').textContent = formatRupiah(income);
-            document.getElementById('dashExpense').textContent = formatRupiah(expense);
-            document.getElementById('dashBalance').textContent = formatRupiah(income - expense);
-
-            renderTransactions(sorted.slice(0, 5), 'recentList');
-            renderTransactions(sorted, 'fullHistoryList');
-            renderChart(sorted);
+        function openSidebar() {
+            document.getElementById('sidebar').classList.add('active');
+            document.querySelector('.sidebar-overlay').classList.add('active');
         }
 
-        // === TRANSACTIONS ===
-        function setTxType(type) {
-            state.type = type;
-            document.getElementById('btnIn').className = `filter-btn ${type === 'income' ? 'active' : ''}`;
-            document.getElementById('btnEx').className = `filter-btn ${type === 'expense' ? 'active' : ''}`;
-            
-            const sel = document.getElementById('inCategory');
-            sel.innerHTML = '<option value="">Pilih Kategori</option>';
-            CATEGORIES[type].forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
-        }
-        
-        // Init default
-        setTxType('income');
-        document.getElementById('inDate').valueAsDate = new Date();
-
-        document.getElementById('txForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const rawAmt = document.getElementById('inAmount').value.replace(/\D/g, '');
-            const amount = parseInt(rawAmt);
-            
-            const tx = {
-                id: state.editingId || Date.now(),
-                type: state.type,
-                amount: amount,
-                category: document.getElementById('inCategory').value,
-                date: document.getElementById('inDate').value,
-                note: document.getElementById('inNote').value
-            };
-
-            if (state.editingId) {
-                // Edit mode: replace existing
-                const index = state.txs.findIndex(t => t.id === state.editingId);
-                if (index !== -1) state.txs[index] = tx;
-                alert('Transaksi diperbarui!');
-            } else {
-                // Add mode
-                state.txs.push(tx);
-                alert('Transaksi disimpan!');
-            }
-
-            localStorage.setItem('txs', JSON.stringify(state.txs));
-            resetForm();
-            updateUI();
-            switchPage('dashboard');
-        });
-
-        function resetForm() {
-            document.getElementById('txForm').reset();
-            state.editingId = null;
-            document.getElementById('inputFormTitle').textContent = 'Tambah Transaksi';
-            document.getElementById('btnSaveTx').innerHTML = '<i class="ph ph-floppy-disk"></i> SIMPAN';
-            document.getElementById('inDate').valueAsDate = new Date();
-            setTxType('income');
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('active');
+            document.querySelector('.sidebar-overlay').classList.remove('active');
         }
 
-        function renderTransactions(data, elId) {
-            const container = document.getElementById(elId);
-            if(data.length === 0) {
-                container.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-sub)">Belum ada data.</div>';
-                return;
-            }
+        function switchPage(page, btn) {
+            document.querySelectorAll('.page-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(page + 'Page').classList.remove('hidden');
             
-            container.innerHTML = data.map(t => `
-                <div class="transaction-row">
-                    <div class="t-left">
-                        <div class="t-icon" style="background: ${t.type==='income'?'rgba(16,185,129,0.1)':'rgba(239,68,68,0.1)'}; color:${t.type==='income'?'var(--success)':'var(--danger)'}">
-                            <i class="ph ${getIcon(t.category)}"></i>
-                        </div>
-                        <div class="t-info">
-                            <h4>${t.category}</h4>
-                            <span>${new Date(t.date).toLocaleDateString('id-ID', {day:'numeric', month:'short'})} • ${t.note || '-'}</span>
-                        </div>
-                    </div>
-                    <div class="t-right">
-                        <div class="t-amount" style="color:${t.type==='income'?'var(--success)':'var(--danger)'}">
-                            ${t.type==='income'?'+':'-'} ${formatRupiah(t.amount, false)}
-                        </div>
-                        <div class="t-actions">
-                            <button class="action-btn edit" onclick="editTx(${t.id})">Edit</button>
-                            <button class="action-btn delete" onclick="deleteTx(${t.id})">Hapus</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+            
+            // Close sidebar automatically on mobile
+            if(window.innerWidth <= 768) closeSidebar();
 
-        function deleteTx(id) {
-            if(confirm('Hapus transaksi ini?')) {
-                state.txs = state.txs.filter(t => t.id !== id);
-                localStorage.setItem('txs', JSON.stringify(state.txs));
-                updateUI();
+            // Refresh charts if dashboard
+            if(page === 'dashboard') {
+                updateDashboard();
+                renderCharts();
             }
         }
 
-        function editTx(id) {
-            const tx = state.txs.find(t => t.id === id);
-            if (!tx) return;
-
-            switchPage('input');
-            state.editingId = id;
-            document.getElementById('inputFormTitle').textContent = 'Edit Transaksi';
-            document.getElementById('btnSaveTx').innerHTML = '<i class="ph ph-check"></i> UPDATE';
-
-            setTxType(tx.type);
-            document.getElementById('inCategory').value = tx.category;
-            document.getElementById('inAmount').value = formatRupiah(tx.amount, false);
-            document.getElementById('inDate').value = tx.date;
-            document.getElementById('inNote').value = tx.note;
-        }
-
-        function filterHistory(type, btn) {
-            document.querySelectorAll('#historyPage .filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            let data = [...state.txs].sort((a,b) => new Date(b.date) - new Date(a.date));
-            if(type !== 'all') {
-                data = data.filter(t => t.type === type);
-            }
-            renderTransactions(data, 'fullHistoryList');
-        }
-
-        // === PROFILE & BUDGET LOGIC ===
+        // --- PROFILE LOGIC ---
         function updateProfileUI() {
-            document.getElementById('sideName').textContent = state.user.name;
-            document.getElementById('sideAvatar').textContent = state.user.name.charAt(0).toUpperCase();
-            document.getElementById('sideSalary').textContent = formatRupiah(state.user.salary);
-            document.getElementById('sideTarget').textContent = formatRupiah(state.user.target);
-
-            // Calculate Daily Advice
-            if (state.user.salary > 0) {
-                const daysInMonth = 30;
-                const disposableIncome = state.user.salary - state.user.target;
-                const dailyLimit = disposableIncome / daysInMonth;
-                
-                if (dailyLimit > 0) {
-                    document.getElementById('budgetAdvice').innerHTML = `
-                        <i class="ph ph-trend-up"></i> <b>Saran:</b><br>
-                        Batasi pengeluaran <b>${formatRupiah(dailyLimit)}</b> / hari untuk mencapai target.
-                    `;
-                } else {
-                    document.getElementById('budgetAdvice').innerHTML = `<span style="color:var(--danger)">Target tabungan terlalu tinggi dibanding gaji!</span>`;
-                }
-            }
+            document.getElementById('sideName').textContent = state.profile.name || state.user.name;
+            document.getElementById('sideEmail').textContent = state.user.email;
+            document.getElementById('sideSalary').textContent = formatRupiah(state.profile.salary);
+            document.getElementById('sideTarget').textContent = formatRupiah(state.profile.target);
+            document.getElementById('sideDob').textContent = state.profile.dob || '-';
+            
+            // Calc Allowance
+            const now = new Date();
+            const daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+            const daily = (state.profile.salary - state.profile.target) / daysInMonth;
+            document.getElementById('dailyAllowance').textContent = formatRupiah(daily > 0 ? daily : 0);
         }
 
         function openProfileModal() {
-            document.getElementById('profileModal').classList.remove('hidden');
-            document.getElementById('profName').value = state.user.name;
-            document.getElementById('profSalary').value = formatRupiah(state.user.salary || 0, false);
-            document.getElementById('profTarget').value = formatRupiah(state.user.target || 0, false);
-            document.getElementById('profDob').value = state.user.dob || '';
-            
-            // Close sidebar if open
-            if(window.innerWidth <= 768) toggleSidebar();
+            document.getElementById('profName').value = state.profile.name || state.user.name;
+            document.getElementById('profDob').value = state.profile.dob;
+            document.getElementById('profSalary').value = state.profile.salary;
+            document.getElementById('profTarget').value = state.profile.target;
+            document.getElementById('profileModal').style.display = 'grid';
+            closeSidebar();
         }
 
         function closeProfileModal() {
-            document.getElementById('profileModal').classList.add('hidden');
+            document.getElementById('profileModal').style.display = 'none';
         }
 
         document.getElementById('profileForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const salary = parseInt(document.getElementById('profSalary').value.replace(/\D/g, '')) || 0;
-            const target = parseInt(document.getElementById('profTarget').value.replace(/\D/g, '')) || 0;
+            state.profile.name = document.getElementById('profName').value;
+            state.profile.dob = document.getElementById('profDob').value;
+            state.profile.salary = parseInt(document.getElementById('profSalary').value) || 0;
+            state.profile.target = parseInt(document.getElementById('profTarget').value) || 0;
             
-            state.user.name = document.getElementById('profName').value;
-            state.user.salary = salary;
-            state.user.target = target;
-            state.user.dob = document.getElementById('profDob').value;
-            
-            localStorage.setItem('user', JSON.stringify(state.user));
+            localStorage.setItem('userProfile', JSON.stringify(state.profile));
             updateProfileUI();
             closeProfileModal();
         });
 
-        // === CHART ===
-        function renderChart(data) {
-            const ctx = document.getElementById('mainChart').getContext('2d');
+        // --- TRANSACTIONS ---
+        async function fetchTransactions() {
+            try {
+                const res = await fetch(`${API_URL}?action=getTransactions&email=${state.user.email}`);
+                const data = await res.json();
+                if(data.status === 'success') {
+                    state.transactions = data.data.sort((a,b) => new Date(b.date) - new Date(a.date));
+                    updateDashboard();
+                    renderHistory();
+                    renderCharts();
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function setTxType(type) {
+            state.currentType = type;
+            const btnInc = document.getElementById('btnIncome');
+            const btnExp = document.getElementById('btnExpense');
             
-            // Group by month (last 6 months)
-            const months = {};
-            const labels = [];
-            for(let i=5; i>=0; i--) {
-                const d = new Date();
-                d.setMonth(d.getMonth() - i);
-                const key = d.toISOString().slice(0, 7);
-                months[key] = { inc: 0, exp: 0 };
-                labels.push(d.toLocaleDateString('id-ID', {month:'short'}));
+            if(type === 'income') {
+                btnInc.style.background = 'var(--success)'; btnInc.style.color = 'white'; btnInc.style.border = 'none';
+                btnExp.style.background = 'transparent'; btnExp.style.color = 'var(--text-sub)'; btnExp.style.border = '1px solid var(--border)';
+            } else {
+                btnExp.style.background = 'var(--danger)'; btnExp.style.color = 'white'; btnExp.style.border = 'none';
+                btnInc.style.background = 'transparent'; btnInc.style.color = 'var(--text-sub)'; btnInc.style.border = '1px solid var(--border)';
+            }
+            updateCategorySelect();
+        }
+
+        function updateCategorySelect() {
+            const sel = document.getElementById('txCategory');
+            sel.innerHTML = CATEGORIES[state.currentType].map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+
+        // SAVE / EDIT
+        document.getElementById('txForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSaveTx');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Menyimpan...'; btn.disabled = true;
+
+            const editId = document.getElementById('editId').value;
+            const isEdit = !!editId;
+
+            // Jika edit, hapus dulu yang lama (Simulasi Edit karena API terbatas)
+            if(isEdit) {
+                 await fetch(API_URL, {
+                    method: 'POST', body: JSON.stringify({ action: 'deleteTransaction', id: parseInt(editId), email: state.user.email })
+                });
+                // Hapus dari state lokal sementara
+                state.transactions = state.transactions.filter(t => t.id != editId);
             }
 
-            data.forEach(t => {
-                const key = t.date.slice(0, 7);
-                if(months[key]) {
-                    if(t.type === 'income') months[key].inc += t.amount;
-                    else months[key].exp += t.amount;
+            const payload = {
+                action: 'addTransaction',
+                email: state.user.email,
+                id: isEdit ? parseInt(editId) : Date.now(), // Gunakan ID lama jika edit
+                type: state.currentType,
+                amount: parseInt(document.getElementById('txAmount').value),
+                category: document.getElementById('txCategory').value,
+                date: document.getElementById('txDate').value,
+                description: document.getElementById('txDesc').value || '-'
+            };
+
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const data = await res.json();
+                if(data.status === 'success') {
+                    state.transactions.unshift(payload); // Add to local
+                    state.transactions.sort((a,b) => new Date(b.date) - new Date(a.date));
+                    
+                    e.target.reset();
+                    cancelEdit(); // Reset form mode
+                    switchPage('dashboard');
                 }
+            } catch(err) { alert('Gagal menyimpan'); }
+            finally { btn.innerHTML = originalText; btn.disabled = false; }
+        });
+
+        // EDIT LOGIC
+        function editTransaction(id) {
+            const tx = state.transactions.find(t => t.id === id);
+            if(!tx) return;
+
+            // Set Form Values
+            document.getElementById('editId').value = tx.id;
+            setTxType(tx.type);
+            document.getElementById('txAmount').value = tx.amount;
+            document.getElementById('txCategory').value = tx.category;
+            // Format Date for Input
+            const d = new Date(tx.date);
+            const dateStr = d.toISOString().split('T')[0];
+            document.getElementById('txDate').value = dateStr;
+            document.getElementById('txDesc').value = tx.description;
+
+            // Change UI Mode
+            document.getElementById('btnSaveTx').innerHTML = '<i class="ph ph-check"></i> UPDATE TRANSAKSI';
+            document.getElementById('btnCancelEdit').classList.remove('hidden');
+            document.getElementById('pageTitle').textContent = "Edit Transaksi";
+            
+            // Switch Page
+            switchPage('input');
+        }
+
+        function cancelEdit() {
+            document.getElementById('editId').value = '';
+            document.getElementById('txForm').reset();
+            document.getElementById('btnSaveTx').innerHTML = '<i class="ph ph-check"></i> SIMPAN';
+            document.getElementById('btnCancelEdit').classList.add('hidden');
+            document.getElementById('txDate').valueAsDate = new Date();
+            document.getElementById('pageTitle').textContent = "Input Transaksi";
+        }
+
+        async function deleteTransaction(id) {
+            if(!confirm("Hapus transaksi ini?")) return;
+            // Optimistic UI
+            const oldData = [...state.transactions];
+            state.transactions = state.transactions.filter(t => t.id !== id);
+            renderHistory();
+            updateDashboard();
+
+            try {
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'deleteTransaction', id, email: state.user.email }) });
+            } catch(e) {
+                state.transactions = oldData;
+                renderHistory();
+                alert('Gagal menghapus');
+            }
+        }
+
+        // --- RENDER & CHARTS ---
+        function formatRupiah(num) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+        }
+
+        function filterHistory(type, btn) {
+            state.filter = type;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            const filtered = state.transactions.filter(t => state.filter === 'all' || t.type === state.filter);
+            
+            list.innerHTML = filtered.map(t => `
+                <div class="transaction-row">
+                    <div class="t-left">
+                        <div class="t-icon" style="background: ${t.type==='income'?'rgba(16,185,129,0.1); color:#10b981':'rgba(239,68,68,0.1); color:#ef4444'}">
+                            <i class="ph ${getIcon(t.category)}"></i>
+                        </div>
+                        <div class="t-info">
+                            <h4>${t.description}</h4>
+                            <span>${new Date(t.date).toLocaleDateString('id-ID', {day:'numeric', month:'short'})} &bull; ${t.category}</span>
+                        </div>
+                    </div>
+                    <div class="t-right">
+                        <span class="t-amount" style="color: ${t.type==='income'?'var(--success)':'var(--danger)'}">
+                            ${t.type==='income'?'+':'-'} ${formatRupiah(t.amount).replace('Rp','')}
+                        </span>
+                        <div class="t-actions">
+                            <button class="btn-mini" onclick="editTransaction(${t.id})"><i class="ph ph-pencil-simple"></i></button>
+                            <button class="btn-mini" style="color: var(--danger); border-color: rgba(239,68,68,0.3);" onclick="deleteTransaction(${t.id})"><i class="ph ph-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            if(filtered.length === 0) list.innerHTML = `<div style="padding:30px; text-align:center; color:var(--text-sub);">Belum ada data.</div>`;
+        }
+
+        function updateDashboard() {
+            const inc = state.transactions.filter(t => t.type==='income').reduce((a,b)=>a+b.amount,0);
+            const exp = state.transactions.filter(t => t.type==='expense').reduce((a,b)=>a+b.amount,0);
+            
+            document.getElementById('dashIncome').textContent = formatRupiah(inc);
+            document.getElementById('dashExpense').textContent = formatRupiah(exp);
+            document.getElementById('dashBalance').textContent = formatRupiah(inc - exp);
+
+            // Daily Spending Logic (Expense today)
+            const today = new Date().toISOString().split('T')[0];
+            const todayExp = state.transactions.filter(t => t.type==='expense' && t.date.startsWith(today)).reduce((a,b)=>a+b.amount,0);
+            
+            // Calc daily budget limit
+            const now = new Date();
+            const daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+            const limit = (state.profile.salary - state.profile.target) / daysInMonth;
+            
+            const left = Math.max(0, limit - todayExp);
+            document.getElementById('dashDailyLeft').textContent = formatRupiah(left);
+        }
+
+        function renderCharts() {
+            // Setup Context
+            const ctxMain = document.getElementById('mainChart').getContext('2d');
+            const ctxPie = document.getElementById('pieChart').getContext('2d');
+
+            // Data Prep
+            const months = {};
+            state.transactions.slice().reverse().forEach(t => {
+                const m = t.date.slice(0, 7);
+                if(!months[m]) months[m] = {inc:0, exp:0};
+                if(t.type === 'income') months[m].inc += t.amount;
+                else months[m].exp += t.amount;
             });
+            const labels = Object.keys(months).slice(-5);
+            
+            // Modern Gradient
+            const gradInc = ctxMain.createLinearGradient(0,0,0,300);
+            gradInc.addColorStop(0, 'rgba(16, 185, 129, 0.4)');
+            gradInc.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
 
-            const dsIncome = Object.values(months).map(v => v.inc);
-            const dsExpense = Object.values(months).map(v => v.exp);
-
-            if(state.chart) state.chart.destroy();
-
-            // Gradient
-            const gradientInc = ctx.createLinearGradient(0,0,0,300);
-            gradientInc.addColorStop(0, 'rgba(67, 97, 238, 0.4)');
-            gradientInc.addColorStop(1, 'rgba(67, 97, 238, 0.0)');
-
-            state.chart = new Chart(ctx, {
+            if(state.charts.main) state.charts.main.destroy();
+            state.charts.main = new Chart(ctxMain, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels: labels.map(l => new Date(l).toLocaleDateString('id-ID', {month:'short'})),
                     datasets: [
-                        { label: 'Masuk', data: dsIncome, borderColor: '#4361ee', backgroundColor: gradientInc, fill: true, tension: 0.4 },
-                        { label: 'Keluar', data: dsExpense, borderColor: '#ef4444', borderDash: [5,5], tension: 0.4, fill: false }
+                        { label:'Masuk', data: labels.map(l=>months[l].inc), borderColor:'#10b981', backgroundColor:gradInc, fill:true, tension:0.4, pointRadius:0, pointHoverRadius:6 },
+                        { label:'Keluar', data: labels.map(l=>months[l].exp), borderColor:'#ef4444', borderDash:[5,5], tension:0.4, pointRadius:0 }
                     ]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8 } },
-                        tooltip: { mode: 'index', intersect: false, backgroundColor: '#1e293b' }
-                    },
-                    scales: {
-                        y: { display: false },
-                        x: { grid: { display: false } }
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        x: { grid: { display: false } }, 
+                        y: { display: false } 
                     }
                 }
             });
-        }
 
-        // === HELPERS ===
-        function toggleSidebar() {
-            const sb = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sb.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
-
-        function switchPage(pageId, btn) {
-            document.querySelectorAll('.page-section').forEach(p => p.classList.add('hidden'));
-            document.getElementById(pageId + 'Page').classList.remove('hidden');
+            // Pie Chart
+            const cats = {};
+            state.transactions.filter(t => t.type==='expense').forEach(t => cats[t.category] = (cats[t.category]||0)+t.amount);
             
-            if(btn) {
-                document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            }
-            
-            // Close sidebar on mobile
-            if(window.innerWidth <= 768) {
-                document.getElementById('sidebar').classList.remove('active');
-                document.getElementById('sidebarOverlay').classList.remove('active');
-            }
-        }
-
-        function formatRupiah(num, prefix='Rp ') {
-            if(!num) num = 0;
-            return (prefix ? 'Rp ' : '') + num.toLocaleString('id-ID');
-        }
-
-        function formatCurrencyInput(e) {
-            let val = e.target.value.replace(/\D/g, '');
-            if(val) e.target.value = parseInt(val).toLocaleString('id-ID');
+            if(state.charts.pie) state.charts.pie.destroy();
+            state.charts.pie = new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(cats),
+                    datasets: [{
+                        data: Object.values(cats),
+                        backgroundColor: ['#4361ee', '#f72585', '#4cc9f0', '#7209b7', '#f59e0b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { cutout: '75%', plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } }
+            });
         }
 
         function getIcon(cat) {
-            const map = {
-                'Gaji': 'ph-briefcase', 'Makanan': 'ph-hamburger', 'Transport': 'ph-car',
-                'Belanja': 'ph-shopping-bag', 'Hiburan': 'ph-popcorn', 'Investasi': 'ph-chart-line-up',
-                'Kesehatan': 'ph-heart-beat', 'Tagihan': 'ph-receipt'
-            };
-            return map[cat] || 'ph-money';
+            const map = { 'Gaji':'ph-money', 'Makan':'ph-hamburger', 'Transport':'ph-car', 'Belanja':'ph-shopping-bag', 'Tagihan':'ph-receipt', 'Lainnya':'ph-dots-three-circle' };
+            return map[cat] || 'ph-star';
         }
-
-        // Touch Swipe to Close Sidebar
-        let touchStartX = 0;
-        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
-        document.addEventListener('touchend', e => {
-            if (touchStartX < 250 && e.changedTouches[0].screenX < touchStartX - 50) {
-                 // Swipe Left to close
-                 document.getElementById('sidebar').classList.remove('active');
-                 document.getElementById('sidebarOverlay').classList.remove('active');
-            }
-        });
     </script>
 </body>
 </html>
